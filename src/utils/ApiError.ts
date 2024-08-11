@@ -1,12 +1,26 @@
+/**
+ * Use common Error class to throw an error from anywhere.
+ * The `errorHandler` middleware will catch this error at the central place and it will return an appropriate response to the client.
+ */
 class ApiError extends Error {
+  statusCode: number;
+  data: any | null;
+  success: boolean;
+  errors: any[];
+
   constructor(
-    private readonly statusCode: number,
+    statusCode: number,
     message: string = 'Something went wrong',
-    private readonly data = null,
-    private readonly success: boolean = false,
+    errors: any[] = [],
     stack: string = ''
   ) {
     super(message);
+    this.statusCode = statusCode;
+    this.data = null;
+    this.message = message;
+    this.success = false;
+    this.errors = errors;
+
     if (stack) {
       this.stack = stack;
     } else {
