@@ -13,6 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/request-ip": "^0.0.41",
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.4.0",
