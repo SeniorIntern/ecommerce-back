@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { User } from '../models';
 import {
@@ -6,6 +7,10 @@ import {
   asyncHandler,
   uploadOnCloudinary
 } from '../utils';
+
+dotenv.config({
+  path: './.env'
+});
 
 const generateAccessAndRefereshTokens = async (userId: string) => {
   try {
@@ -29,12 +34,14 @@ const generateAccessAndRefereshTokens = async (userId: string) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, username, password } = req.body;
-  //console.log("email: ", email);
 
+  // TODO : validate using zod
   if (
-    [fullName, email, username, password].some((field) => field?.trim() === '')
+    [fullName, email, username, password].some(
+      (field) => field === undefined || field?.trim() === ''
+    )
   ) {
-    throw new ApiError(400, 'All fields are required');
+    throw new ApiError(400, 'All fields for registration are required');
   }
 
   const existedUser = await User.findOne({
@@ -45,24 +52,16 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, 'User with email or username already exists');
   }
 
-  let avatarLocalPath;
-  if (
-    req.files &&
-    'avatarImage' in req.files &&
-    Array.isArray(req.files.avatarImage) &&
-    req.files.avatarImage.length > 0
-  ) {
-    avatarLocalPath = req.files?.avatar[0]?.path;
-  }
+  const avatarLocalPath = req.file?.path;
 
   if (!avatarLocalPath) {
-    throw new ApiError(400, 'Avatar file is required');
+    throw new ApiError(400, 'Avatar file is missing');
   }
 
   const avatar = await uploadOnCloudinary(avatarLocalPath);
 
   if (!avatar) {
-    throw new ApiError(400, 'Avatar file is required');
+    throw new ApiError(400, 'Failed to upload avatar image');
   }
 
   const user = await User.create({
@@ -88,7 +87,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
-  console.log(email);
 
   if (!username && !email) {
     throw new ApiError(400, 'username or email is required');
@@ -102,7 +100,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'User does not exist');
   }
 
-  const isPasswordValid = user.isPasswordCorrect(password);
+  const isPasswordValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordValid) {
     throw new ApiError(401, 'Invalid user credentials');
