@@ -1,8 +1,14 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
+
+type UserRequest = Request & {
+  user?: {
+    _id: string;
+  };
+};
 
 const asyncHandler = (
   requestHandler: (
-    req: Request,
+    req: UserRequest,
     res: Response,
     next: NextFunction
   ) => Promise<any>

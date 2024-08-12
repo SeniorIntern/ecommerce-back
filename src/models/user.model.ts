@@ -1,8 +1,21 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
-const userSchema = new Schema(
+type User = Document & {
+  username: string;
+  email: string;
+  fullName: string;
+  avatar: string;
+  address: string;
+  password: string;
+  refreshToken: string;
+  generateRefreshToken: () => string;
+  generateAccessToken: () => string;
+  isPasswordCorrect: (password:string) => boolean;
+};
+
+const userSchema = new Schema<User>(
   {
     username: {
       type: String,
