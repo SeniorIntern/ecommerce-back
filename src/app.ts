@@ -35,8 +35,7 @@ const limiter = rateLimit({
   handler: (_, __, ___, options) => {
     throw new ApiError(
       options.statusCode || 500,
-      `There are too many requests. You are only allowed ${
-        options.limit
+      `There are too many requests. You are only allowed ${options.limit
       } requests per ${options.windowMs / 60000} minutes`
     );
   }
@@ -44,7 +43,6 @@ const limiter = rateLimit({
 
 // Apply rate limiting to all requests
 app.use(limiter);
-
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.use(express.static('public'));
@@ -69,11 +67,15 @@ app.use(
 );
 
 //routes import
+import categoryRoutes from './routes/category.routes';
+import productRoutes from './routes/product.routes';
 import userRouter from './routes/user.routes';
 import { ApiError } from './utils';
 
 //routes declaration
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/v1/products', productRoutes);
 
 // error middleware
 app.use(errorHandler);
