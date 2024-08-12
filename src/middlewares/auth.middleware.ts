@@ -1,6 +1,11 @@
+import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { User } from '../models';
 import { ApiError, asyncHandler } from '../utils';
+
+dotenv.config({
+  path: './.env'
+});
 
 export const verifyJWT = asyncHandler(async (req, _, next) => {
   try {

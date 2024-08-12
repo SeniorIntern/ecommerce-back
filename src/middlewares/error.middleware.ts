@@ -1,7 +1,12 @@
+import dotenv from 'dotenv';
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { logger } from '../logger';
 import { ApiError } from '../utils';
+
+dotenv.config({
+  path: './.env'
+});
 
 const errorHandler = (
   err: any,

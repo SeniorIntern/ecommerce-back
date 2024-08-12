@@ -1,11 +1,16 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import morgan from 'morgan';
 import requestIp from 'request-ip';
 import { logger } from './logger';
 import { errorHandler } from './middlewares';
+
+dotenv.config({
+  path: './.env'
+});
 
 const app = express();
 
@@ -30,13 +35,14 @@ const limiter = rateLimit({
   handler: (_, __, ___, options) => {
     throw new ApiError(
       options.statusCode || 500,
-      `There are too many requests. You are only allowed ${options.max
+      `There are too many requests. You are only allowed ${
+        options.limit
       } requests per ${options.windowMs / 60000} minutes`
     );
   }
 });
 
-// Apply the rate limiting middleware to all requests
+// Apply rate limiting to all requests
 app.use(limiter);
 
 app.use(express.json({ limit: '16kb' }));

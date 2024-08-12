@@ -1,6 +1,11 @@
 import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import mongoose, { Document, Schema } from 'mongoose';
+
+dotenv.config({
+  path: './.env'
+});
 
 type User = Document & {
   username: string;
@@ -12,7 +17,7 @@ type User = Document & {
   refreshToken: string;
   generateRefreshToken: () => string;
   generateAccessToken: () => string;
-  isPasswordCorrect: (password:string) => boolean;
+  isPasswordCorrect: (password: string) => Promise<boolean>;
 };
 
 const userSchema = new Schema<User>(

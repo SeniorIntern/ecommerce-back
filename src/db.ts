@@ -1,5 +1,11 @@
+import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { DB_NAME } from './constants';
+
+dotenv.config({
+  path: './.env'
+});
+console.log(`mongo db===${process.env.MONGODB_URI}/${DB_NAME}`);
 
 const connectDB = async () => {
   try {
