@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { PRODUCT_MAX_SUBIMAGES } from '../constants';
 import {
   createProduct,
   deleteProduct,
@@ -6,14 +7,42 @@ import {
   getProductById,
   patchProduct
 } from '../controllers/product.controller';
-import { verifyJWT } from '../middlewares';
+import { upload, verifyJWT } from '../middlewares';
 
 const router = Router();
 
 router.get('/', getAllProducts);
 router.get('/:productId', getProductById);
-router.post('/', verifyJWT, createProduct);
-router.patch('/:productId', verifyJWT, patchProduct);
+router.post(
+  '/',
+  verifyJWT,
+  upload.fields([
+    {
+      name: 'mainImage',
+      maxCount: 1
+    },
+    {
+      name: 'subImages',
+      maxCount: PRODUCT_MAX_SUBIMAGES
+    }
+  ]),
+  createProduct
+);
+router.patch(
+  '/:productId',
+  verifyJWT,
+  upload.fields([
+    {
+      name: 'mainImage',
+      maxCount: 1
+    },
+    {
+      name: 'subImages',
+      maxCount: PRODUCT_MAX_SUBIMAGES
+    }
+  ]),
+  patchProduct
+);
 router.delete('/:productId', verifyJWT, deleteProduct);
 
 export default router;
