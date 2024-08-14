@@ -5,7 +5,8 @@ import {
   deleteProduct,
   getAllProducts,
   getProductById,
-  patchProduct
+  patchProduct,
+  patchProductImages
 } from '../controllers/product.controller';
 import { upload, verifyJWT } from '../middlewares';
 
@@ -28,8 +29,11 @@ router.post(
   ]),
   createProduct
 );
+
+router.patch('/:productId', verifyJWT, patchProduct);
+
 router.patch(
-  '/:productId',
+  '/images/:productId',
   verifyJWT,
   upload.fields([
     {
@@ -41,7 +45,7 @@ router.patch(
       maxCount: PRODUCT_MAX_SUBIMAGES
     }
   ]),
-  patchProduct
+  patchProductImages
 );
 router.delete('/:productId', verifyJWT, deleteProduct);
 

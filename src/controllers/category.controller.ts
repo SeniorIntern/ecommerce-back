@@ -56,13 +56,11 @@ const updateCategory = asyncHandler(async (req, res) => {
 
 const deleteCateogry = asyncHandler(async (req, res) => {
   const { categoryId } = req.params;
-
   if (!categoryId) {
     throw new ApiError(400, 'Cateogry Id is required');
   }
 
   const category = await Category.findByIdAndDelete(categoryId);
-
   if (!category) {
     throw new ApiError(404, 'Category not found');
   }
