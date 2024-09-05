@@ -76,6 +76,7 @@ import { ApiError } from './utils';
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/products', productRoutes);
+// missing routes- address, orders
 
 // error middleware
 app.use(errorHandler);

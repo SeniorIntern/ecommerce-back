@@ -72,9 +72,7 @@ const registerUser = asyncHandler(async (req, res) => {
     username: username.toLowerCase()
   });
 
-  const createdUser = await User.findById(user._id).select(
-    '-password -refreshToken'
-  );
+  const createdUser = await User.findById(user._id).select('-password');
 
   if (!createdUser) {
     throw new ApiError(500, 'Something went wrong while registering the user');
@@ -223,7 +221,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user?._id);
   if (!user) throw new ApiError(404, 'User not found');
 
-  const isPasswordCorrect = user.isPasswordCorrect(oldPassword);
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
 
   if (!isPasswordCorrect) {
     throw new ApiError(400, 'Invalid old password');
