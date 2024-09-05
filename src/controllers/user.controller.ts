@@ -244,9 +244,9 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-  const { fullName, email } = req.body;
+  const { fullName, email, username } = req.body;
 
-  if (!fullName || !email) {
+  if (!fullName && !email && !username) {
     throw new ApiError(400, 'All fields are required');
   }
 
@@ -255,13 +255,15 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     {
       $set: {
         fullName,
-        email: email
+        email,
+        username
       }
     },
     { new: true }
   ).select('-password');
 
   if (!user) throw new ApiError(404, 'User not found');
+  await user.save();
 
   return res
     .status(200)
