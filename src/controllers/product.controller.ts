@@ -1,3 +1,4 @@
+import { clear } from 'console';
 import { PRODUCT_MAX_SUBIMAGES } from '../constants';
 import { Category } from '../models';
 import { Product } from '../models/product.model';
@@ -56,7 +57,21 @@ const createProduct = asyncHandler(async (req, res) => {
 
   const mainImageLocalPath = req.files.mainImage;
   const subImagesLocalPath = req.files.subImages;
-
+  /*
+  path is an array of multer file{} 
+  [
+    {
+      fieldname: 'mainImage',
+      originalname: 'abc.jpg_720x720q80.jpg',
+      encoding: '7bit',
+      mimetype: 'image/jpeg',
+      destination: './public/temp',
+      filename: 'abc.jpg_720x720q80.jpg',
+      path: 'public/temp/abc.jpg_720x720q80.jpg',
+      size: 35942
+    }
+  ];
+  */
   // console.log('mainImageLocalPath===', mainImageLocalPath);
   // console.log('subImagesLocalPath===', subImagesLocalPath);
 
@@ -67,7 +82,9 @@ const createProduct = asyncHandler(async (req, res) => {
   const mainImageUrl = mainImage.url;
 
   let subImages = [];
-  for (let i = 0; i < PRODUCT_MAX_SUBIMAGES; i++) {
+  for (let i = 0; i < subImagesLocalPath.length; i++) {
+    console.log(`local path of sub img ${i}===`, subImagesLocalPath[i].path);
+
     const url = await uploadOnCloudinary(subImagesLocalPath[i].path);
     if (!url) {
       throw new ApiError(400, 'Image upload failed');
@@ -78,6 +95,7 @@ const createProduct = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Sub images failed to upload');
   }
   const subImageUrls = subImages.map((img) => img.url);
+  console.log('subImageUrls===', subImageUrls);
 
   const product = await Product.create({
     productName,
