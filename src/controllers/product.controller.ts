@@ -1,4 +1,4 @@
-import { clear } from 'console';
+import mongoose from 'mongoose';
 import { PRODUCT_MAX_SUBIMAGES } from '../constants';
 import { Category } from '../models';
 import { Product } from '../models/product.model';
@@ -6,15 +6,56 @@ import {
   ApiError,
   ApiResponse,
   asyncHandler,
+  getMongoosePaginationOptions,
   uploadOnCloudinary
 } from '../utils';
 
+const getAllProducts = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+
+  // populate category. perform left outer join
+  const productAggregate = Product.aggregate([
+    {
+      $lookup: {
+        from: 'categories', // The name of the category collection
+        localField: 'category', // The field from the Product schema
+        foreignField: '_id', // The field from the Category schema
+        as: 'category' // The name of the output array field
+      }
+    },
+    {
+      $unwind: {
+        path: '$category',
+        preserveNullAndEmptyArrays: true
+      }
+    }
+  ]);
+
+  // @ts-ignore
+  const products = await Product.aggregatePaginate(
+    productAggregate,
+    getMongoosePaginationOptions({
+      page: Number(page),
+      limit: Number(limit),
+      customLabels: {
+        totalDocs: 'totalProducts',
+        docs: 'products'
+      }
+    })
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, products, 'Products fetched successfully'));
+});
+
+/*
 const getAllProducts = asyncHandler(async (_, res) => {
   const products = await Product.find();
 
   return res.status(200).json(new ApiResponse(200, { products }));
 });
-
+*/
 const getProductById = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   if (!productId) throw new ApiError(400, 'Product Id is required');
@@ -22,6 +63,64 @@ const getProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(productId);
   if (!product) throw new ApiError(404, 'Product not found');
   return res.status(200).json(new ApiResponse(200, product));
+});
+
+const getProductsByCategory = asyncHandler(async (req, res) => {
+  const { categoryId } = req.params;
+  const { page = 1, limit = 10 } = req.query;
+
+  const category =
+    await Category.findById(categoryId).select('categoryName _id');
+
+  if (!category) {
+    throw new ApiError(404, 'Category does not exist');
+  }
+
+  // populate category. perform left outer join
+  const productAggregate = Product.aggregate([
+    {
+      $match: {
+        category: new mongoose.Types.ObjectId(categoryId)
+      }
+    },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'category',
+        foreignField: '_id',
+        as: 'category'
+      }
+    },
+    {
+      $unwind: {
+        path: '$category',
+        preserveNullAndEmptyArrays: true
+      }
+    }
+  ]);
+
+  // @ts-ignore
+  const products = await Product.aggregatePaginate(
+    productAggregate,
+    getMongoosePaginationOptions({
+      page: Number(page),
+      limit: Number(limit),
+      customLabels: {
+        totalDocs: 'totalProducts',
+        docs: 'products'
+      }
+    })
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { ...products, category },
+        'Category products fetched successfully'
+      )
+    );
 });
 
 const createProduct = asyncHandler(async (req, res) => {
@@ -118,6 +217,7 @@ const patchProduct = asyncHandler(async (req, res) => {
   if (!productId) throw new ApiError(400, 'Product Id is required');
 
   const { productName, category, description, price, stock } = req.body;
+  if (!category) throw new ApiError(400, 'Category is required');
 
   const categoryToBeAdded = await Category.findById(category);
   if (!categoryToBeAdded) {
@@ -222,6 +322,7 @@ export {
   deleteProduct,
   getAllProducts,
   getProductById,
+  getProductsByCategory,
   patchProduct,
   patchProductImages
 };

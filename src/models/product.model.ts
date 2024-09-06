@@ -8,7 +8,9 @@ type Product = Document & {
   description: string;
   price: number;
   stock: number;
-  mainImage: string; subImages: string[]; };
+  mainImage: string;
+  subImages: string[];
+};
 
 const productSchema = new Schema<Product>(
   {

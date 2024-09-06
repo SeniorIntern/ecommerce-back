@@ -5,6 +5,7 @@ import {
   deleteProduct,
   getAllProducts,
   getProductById,
+  getProductsByCategory,
   patchProduct,
   patchProductImages
 } from '../controllers/product.controller';
@@ -13,7 +14,11 @@ import { upload, verifyJWT } from '../middlewares';
 const router = Router();
 
 router.get('/', getAllProducts);
+
 router.get('/:productId', getProductById);
+
+router.route('/category/:categoryId').get(getProductsByCategory)
+
 router.post(
   '/',
   verifyJWT,
