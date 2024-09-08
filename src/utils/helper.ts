@@ -1,6 +1,7 @@
 const getMongoosePaginationOptions = ({
   page = 1,
   limit = 10,
+  // @ts-ignore
   customLabels
 }) => {
   return {
