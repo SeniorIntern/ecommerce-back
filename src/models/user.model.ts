@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import mongoose, { Document, Schema } from 'mongoose';
+import { AvailableUserRoles, UserRolesEnum } from '../constants';
 
 dotenv.config({
   path: './.env'
@@ -15,6 +16,7 @@ type User = Document & {
   address: string;
   password: string;
   refreshToken: string;
+  role: string;
   generateRefreshToken: () => string;
   generateAccessToken: () => string;
   isPasswordCorrect: (password: string) => Promise<boolean>;
@@ -42,6 +44,12 @@ const userSchema = new Schema<User>(
       required: true,
       trim: true,
       index: true
+    },
+    role: {
+      type: String,
+      enum: AvailableUserRoles,
+      default: UserRolesEnum.USER,
+      required: true
     },
     avatar: {
       type: String,
@@ -78,6 +86,7 @@ userSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
+      role: this.role,
       username: this.username,
       fullName: this.fullName
     },

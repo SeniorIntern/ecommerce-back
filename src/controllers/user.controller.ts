@@ -7,6 +7,7 @@ import {
   asyncHandler,
   uploadOnCloudinary
 } from '../utils';
+import { UserRolesEnum } from '../constants';
 
 dotenv.config({
   path: './.env'
@@ -33,7 +34,7 @@ const generateAccessAndRefereshTokens = async (userId: string) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { fullName, email, username, password } = req.body;
+  const { fullName, email, username, password, role } = req.body;
 
   // TODO : validate using zod
   if (
@@ -54,21 +55,36 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const avatarLocalPath = req.file?.path;
 
+  let avatar;
   if (!avatarLocalPath) {
-    throw new ApiError(400, 'Avatar file is missing');
+    avatar =
+      'https://res.cloudinary.com/dpwaajbmp/image/upload/v1725540592/aqovns15q9xhdkoiusia.png';
+  }
+  if (avatarLocalPath) {
+    const avatarUploadResponse = await uploadOnCloudinary(avatarLocalPath);
+    if (!avatarUploadResponse) {
+      throw new ApiError(400, 'Failed to upload avatar image');
+    }
+    avatar = avatarUploadResponse.url;
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
-
-  if (!avatar) {
-    throw new ApiError(400, 'Failed to upload avatar image');
-  }
+  /* 
+    if (!avatarLocalPath) {
+      throw new ApiError(400, 'Avatar file is missing');
+    }
+    const avatarUploadResponse = await uploadOnCloudinary(avatarLocalPath);
+    if (!avatarUploadResponse) {
+      throw new ApiError(400, 'Failed to upload avatar image');
+    }
+    const { url: avatar } = avatarUploadResponse;
+  */
 
   const user = await User.create({
     fullName,
-    avatar: avatar.url,
+    avatar,
     email,
     password,
+    role: role || UserRolesEnum.USER,
     username: username.toLowerCase()
   });
 

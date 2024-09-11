@@ -13,11 +13,20 @@ const PaymentProviderEnum = {
 };
 const AvailablePaymentProviders = Object.values(PaymentProviderEnum);
 
+const UserRolesEnum = {
+  ADMIN: 'ADMIN',
+  USER: 'USER'
+};
+
+const AvailableUserRoles = Object.values(UserRolesEnum);
+
 export {
   AvailableOrderStatuses,
   AvailablePaymentProviders,
+  AvailableUserRoles,
   DB_NAME,
   OrderStatusEnum,
   PRODUCT_MAX_SUBIMAGES,
-  PaymentProviderEnum
+  PaymentProviderEnum,
+  UserRolesEnum
 };
