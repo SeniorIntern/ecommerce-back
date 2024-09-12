@@ -251,6 +251,11 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, 'Password changed successfully'));
 });
 
+const getAllUsers = asyncHandler(async (_, res) => {
+  const users = await User.find();
+  return res.status(200).json(new ApiResponse(200, users));
+});
+
 const getCurrentUser = asyncHandler(async (req, res) => {
   if (!req.user) throw new ApiError(400, 'User not found in request');
 
@@ -320,6 +325,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 });
 
 export {
+  getAllUsers,
   changeCurrentPassword,
   getCurrentUser,
   loginUser,

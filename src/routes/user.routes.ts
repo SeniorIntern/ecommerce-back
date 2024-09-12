@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   changeCurrentPassword,
+  getAllUsers,
   getCurrentUser,
   loginUser,
   logoutUser,
@@ -14,6 +15,7 @@ import { verifyJWT } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
+router.route('/').get(getAllUsers);
 router.route('/register').post(upload.single('avatarImage'), registerUser);
 router.route('/login').post(loginUser);
 
