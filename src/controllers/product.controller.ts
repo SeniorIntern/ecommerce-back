@@ -217,11 +217,13 @@ const patchProduct = asyncHandler(async (req, res) => {
   if (!productId) throw new ApiError(400, 'Product Id is required');
 
   const { productName, category, description, price, stock } = req.body;
-  if (!category) throw new ApiError(400, 'Category is required');
 
-  const categoryToBeAdded = await Category.findById(category);
-  if (!categoryToBeAdded) {
-    throw new ApiError(404, 'Category does not exist');
+  // validate category exist
+  if (category) {
+    const categoryToBeAdded = await Category.findById(category);
+    if (!categoryToBeAdded) {
+      throw new ApiError(404, 'Category does not exist');
+    }
   }
 
   const product = await Product.findByIdAndUpdate(
