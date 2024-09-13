@@ -17,7 +17,7 @@ router.get('/', getAllProducts);
 
 router.get('/:productId', getProductById);
 
-router.route('/category/:categoryId').get(getProductsByCategory)
+router.route('/category/:categoryId').get(getProductsByCategory);
 
 router.post(
   '/',

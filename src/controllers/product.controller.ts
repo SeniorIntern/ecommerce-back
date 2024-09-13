@@ -201,8 +201,8 @@ const createProduct = asyncHandler(async (req, res) => {
     owner: ownerId,
     category,
     description,
-    price,
-    stock,
+    price: +price,
+    stock: +stock,
     mainImage: mainImageUrl,
     subImages: subImageUrls
   });
