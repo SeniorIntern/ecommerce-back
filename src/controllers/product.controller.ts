@@ -280,7 +280,9 @@ const patchProductImages = asyncHandler(async (req, res) => {
   const mainImageUrl = mainImage.url;
 
   let subImages = [];
-  for (let i = 0; i < PRODUCT_MAX_SUBIMAGES; i++) {
+  for (let i = 0; i < subImagesLocalPath.length; i++) {
+    console.log(`local path of sub img ${i}===`, subImagesLocalPath[i].path);
+
     const url = await uploadOnCloudinary(subImagesLocalPath[i].path);
     if (!url) {
       throw new ApiError(400, 'Image upload failed');
