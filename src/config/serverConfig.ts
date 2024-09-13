@@ -10,7 +10,11 @@ const cloudinaryConfigOptions: ConfigOptions = {
   api_secret: process.env.CLOUDINARY_API_SECRET
 };
 
-let whitelist = ['http://localhost:3000', 'https://localhost:3000'];
+let whitelist = [
+  'http://localhost:3000',
+  'https://localhost:3000',
+  'http://www.localhost:3000'
+];
 
 const CORS_OPTIONS: CorsOptions = {
   origin: whitelist,
