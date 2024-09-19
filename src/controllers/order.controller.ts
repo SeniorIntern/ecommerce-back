@@ -10,10 +10,10 @@ type OrderItem = {
 };
 
 const getAllOrders = asyncHandler(async (_, res) => {
-  const orders = await Order.find();
+  const orders = await Order.find().populate('userId')
   res
     .status(200)
-    .json(new ApiResponse(200, orders, 'Orders fetched sucessfully'));
+    .json(new ApiResponse(200, {orders}, 'Orders fetched sucessfully'));
 });
 
 const getOrdersByUserId = asyncHandler(async (req, res) => {
