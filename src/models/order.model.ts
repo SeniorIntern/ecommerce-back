@@ -1,95 +1,52 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, ObjectId, Schema } from 'mongoose';
 import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
-import {
-  AvailableOrderStatuses,
-  AvailablePaymentProviders,
-  OrderStatusEnum,
-  PaymentProviderEnum
-} from '../constants';
 
-const orderSchema = new Schema(
+type Order = Document & {
+  userId: ObjectId;
+  orderItems: {
+    productId: mongoose.Types.ObjectId;
+    quantity: number;
+    price: number; // storing the product price at the time of order
+  }[];
+  totalPrice: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+const orderSchema = new Schema<Order>(
   {
-    orderPrice: {
-      type: Number,
+    userId: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
       required: true
     },
-    discountedOrderPrice: {
-      type: Number,
-      required: true
-    },
-    coupon: {
-      type: Schema.Types.ObjectId,
-      ref: 'Coupon',
-      default: null
-    },
-    customer: {
-      type: Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    items: {
-      type: [
-        {
-          productId: {
-            type: Schema.Types.ObjectId,
-            ref: 'Product'
-          },
-          quantity: {
-            type: Number,
-            required: true,
-            min: [1, 'Quantity can not be less then 1.'],
-            default: 1
-          }
+    orderItems: [
+      {
+        productId: {
+          type: mongoose.Types.ObjectId,
+          ref: 'Product',
+          required: true
+        },
+        quantity: {
+          type: Number,
+          required: true
+        },
+        price: {
+          type: Number,
+          required: true // Price at the time of purchase
         }
-      ],
-      default: []
-    },
-    address: {
-      addressLine1: {
-        required: true,
-        type: String
-      },
-      addressLine2: {
-        type: String
-      },
-      city: {
-        required: true,
-        type: String
-      },
-      country: {
-        required: true,
-        type: String
-      },
-      pincode: {
-        required: true,
-        type: String
-      },
-      state: {
-        required: true,
-        type: String
       }
-    },
-    status: {
-      type: String,
-      enum: AvailableOrderStatuses,
-      default: OrderStatusEnum.PENDING
-    },
-    paymentProvider: {
-      type: String,
-      enum: AvailablePaymentProviders,
-      default: PaymentProviderEnum.UNKNOWN
-    },
-    paymentId: {
-      type: String
-    },
-    // This field shows if the payment is done or not
-    isPaymentDone: {
-      type: Boolean,
-      default: false
+    ],
+    totalPrice: {
+      type: Number,
+      required: true
     }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
 orderSchema.plugin(mongooseAggregatePaginate);
 
-export const EcomOrder = mongoose.model('EcomOrder', orderSchema);
+export const Order = mongoose.model('Order', orderSchema);

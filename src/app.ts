@@ -23,7 +23,7 @@ app.use(requestIp.mw());
 // Rate limiter to avoid misuse of the service and avoid cost spikes
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 300, // Limit each IP to 300 requests per `window` (here, per 1 minutes)
+  max: 60, // Limit each IP to 60 requests per `window` (here, per 1 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   keyGenerator: (req: any, _) => {
@@ -66,6 +66,7 @@ app.use(
 //routes import
 import { serverConfig } from './config';
 import categoryRoutes from './routes/category.routes';
+import orderRouter from './routes/order.routes';
 import productRoutes from './routes/product.routes';
 import userRouter from './routes/user.routes';
 import { ApiError } from './utils';
@@ -74,7 +75,7 @@ import { ApiError } from './utils';
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/products', productRoutes);
-// missing routes- address, orders
+app.use('/api/v1/orders', orderRouter);
 
 // error middleware
 app.use(errorHandler);
