@@ -13,7 +13,7 @@ const cloudinaryConfigOptions: ConfigOptions = {
 let whitelist = [
   'http://localhost:3000',
   'https://localhost:3000',
-  'http://www.localhost:3000'
+  'https://ecommerce-indol-kappa.vercel.app',
 ];
 
 const CORS_OPTIONS: CorsOptions = {
