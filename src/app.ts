@@ -32,7 +32,8 @@ const limiter = rateLimit({
   handler: (_, __, ___, options) => {
     throw new ApiError(
       options.statusCode || 500,
-      `There are too many requests. You are only allowed ${options.limit
+      `There are too many requests. You are only allowed ${
+        options.limit
       } requests per ${options.windowMs / 60000} minutes`
     );
   }
@@ -76,6 +77,12 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/orders', orderRouter);
+
+// health check
+app.get('/status', (_, res) => {
+  res.status(200).json('e-commerce API is live');
+  console.log('for debug purpose');
+});
 
 // error middleware
 app.use(errorHandler);
