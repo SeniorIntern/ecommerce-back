@@ -10,9 +10,9 @@ dotenv.config({
 
 const errorHandler = (
   err: any,
-  req: Request,
+  _: Request,
   res: Response,
-  next: NextFunction
+  __: NextFunction
 ) => {
   let error = err;
 
